@@ -13,7 +13,7 @@ Listener hook:
 var Webflow = Webflow || [];
 Webflow.push(function () {
   $(document).off('slider-event', '[data-slider-events]')
-    .on('slider-event', '[data-slider-events]', function(e, data, slider) {
+    .on('slider-event', '[data-slider-events]', function(e, data) {
     	// do your thang
  	});
 });
@@ -32,6 +32,12 @@ Finally, upload your Javascript and ```webflow.events.slider.js``` to your serve
 
 ### Parameters
 
+#### ```event```
+
+This is the event triggered on the slider for any navigation event. It is a standard (jQuery event object)[https://api.jquery.com/category/events/event-object/].
+
+* ```event.target``` - The slider that the event was triggered on.
+
 #### ```data```
 
 This is the data object that Webflow's Javascript library attaches to a slider. It contains some useful information like:
@@ -41,10 +47,6 @@ This is the data object that Webflow's Javascript library attaches to a slider. 
 * ```data.slides``` - DOM elements for the individual slides.
 * ```data.nav``` - The DOM element which contains the nav dots.
 
-#### ```slider```
-
-This is the DOM element for the slider itself.
-
 ### Example
 This example makes a simple call to Google Analytics for each time a slide is displayed. You could very easily enhance this to track more descriptive info by adding data attributes to either the slider or even the slides themselves.
 
@@ -53,7 +55,8 @@ var Webflow = Webflow || [];
 Webflow.push(function () {
   $(document)
   	.off('slider-event', '[data-slider-events]')
-    .on('slider-event', '[data-slider-events]', function(e, data, slider) {
+    .on('slider-event', '[data-slider-events]', function(event, data) {
+      var slider = event.target;
     	ga('send', 'event', 'Slider View', $(slider).attr('id'), data.index);
     });
 });
