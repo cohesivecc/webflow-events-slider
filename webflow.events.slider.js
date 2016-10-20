@@ -10,33 +10,27 @@ var Webflow = Webflow || [];
 Webflow.push(function () {
   var namespace = '.w-slider';
 
-  $('[data-slider-events]' + namespace).each(function() {
-
-    var _data = $(this).data(namespace);
-    var _this = this;
-
-    _this.slideChanged = function() {
-      $(_this).trigger('slider-event', [_data, _this])
+  function slideChangeEvent(evt) {
+    var slider;
+    if($(evt.target).is('[data-slider-events]')) {
+      slider = $(evt.target);
+    } else {
+      slider = $(evt.target).closest('[data-slider-events]')
     }
-
-    // listeners
-    _data.el.on('swipe' + namespace, function(e, d) {
-      _this.slideChanged();
-    });
-    _data.left.on('tap' + namespace, function(e) {
-      _this.slideChanged();
-    });
-    _data.right.on('tap' + namespace, function(e) {
-      _this.slideChanged();
-    });
-  	_data.nav.on('tap' + namespace, '> div', function(e) {
-      _this.slideChanged();
-    });
-
-    // initial slide - manually trigger the event
-    if($(_data.el).is(":visible")) {
-      _this.slideChanged();
+    if(slider) {
+      $(slider).trigger('slider-event', $(slider).data(namespace));
     }
+  }
+
+  var tap_selector = '[data-slider-events] .w-slider-arrow-left, [data-slider-events] .w-slider-arrow-right, [data-slider-events] .w-slider-dot';
+  $(document).off('tap' + namespace, tap_selector, slideChangeEvent).on('tap' + namespace, tap_selector, slideChangeEvent);
+
+  var swipe_selector = '[data-slider-events]';
+  $(document).off('swipe' + namespace, swipe_selector, slideChangeEvent).on('swipe' + namespace, swipe_selector, slideChangeEvent);
+
+  // initial slide - manually trigger the event
+  $('[data-slider-events]:visible').each(function(i, s) {
+    slideChangeEvent({ target: s })
   });
 
 });
