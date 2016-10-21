@@ -1,5 +1,5 @@
 /*
- * Webflow Embedly GA: Adds Google Analytics event tracking to a Webflow site for Embedly embedded videos (Webflow's default)
+ * Webflow Slider Events: Trigger an event on navigation of Webflow's slider components.
  * @license MIT
  * @author Neal White - http://www.cohesive.cc
  *
@@ -12,25 +12,25 @@ Webflow.push(function () {
 
   function slideChangeEvent(evt) {
     var slider;
-    if($(evt.target).is('[data-slider-events]')) {
+    if($(evt.target).is(namespace)) {
       slider = $(evt.target);
     } else {
-      slider = $(evt.target).closest('[data-slider-events]')
+      slider = $(evt.target).closest(namespace)
     }
     if(slider) {
       $(slider).trigger('slider-event', $(slider).data(namespace));
     }
   }
 
-  var tap_selector = '[data-slider-events] .w-slider-arrow-left, [data-slider-events] .w-slider-arrow-right, [data-slider-events] .w-slider-dot';
-  $(document).off('tap' + namespace, tap_selector, slideChangeEvent).on('tap' + namespace, tap_selector, slideChangeEvent);
+  var tap_selector = $.map(['.w-slider-arrow-left', '.w-slider-arrow-right', '.w-slider-dot'], function(s) { return namespace + ' ' + s; }).join(', ');
 
-  var swipe_selector = '[data-slider-events]';
-  $(document).off('swipe' + namespace, swipe_selector, slideChangeEvent).on('swipe' + namespace, swipe_selector, slideChangeEvent);
+  // listeners
+  $(document).off('tap' + namespace, tap_selector, slideChangeEvent).on('tap' + namespace, tap_selector, slideChangeEvent);
+  $(document).off('swipe' + namespace, namespace, slideChangeEvent).on('swipe' + namespace, namespace, slideChangeEvent);
 
   // initial slide - manually trigger the event
-  $('[data-slider-events]:visible').each(function(i, s) {
-    slideChangeEvent({ target: s })
+  $(namespace + ':visible').each(function(i, s) {
+    slideChangeEvent({ target: s });
   });
 
 });
